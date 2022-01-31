@@ -1,0 +1,3 @@
+[merge "ignore"]
+    name = ignore merge driver
+    driver = ignore true
