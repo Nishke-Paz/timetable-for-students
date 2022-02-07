@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { SttAuthService } from "../../stt-services/stt-auth.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { sttEmitter } from "../../stt-emitters/stt-emitter";
-import { Subject, takeUntil } from "rxjs";
+import { takeUntil } from "rxjs";
+import { RxUnsubscribeComponent } from "../../rx-unsubscribe";
 
 
 @Component({
@@ -11,24 +12,19 @@ import { Subject, takeUntil } from "rxjs";
     styleUrls: ["./stt-header.component.less"],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SttHeaderComponent implements OnInit, OnDestroy{
+export class SttHeaderComponent extends RxUnsubscribeComponent implements OnInit{
     login: boolean = false;
-    private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
     constructor(
         private sttAuthService: SttAuthService,
         private activatedRouteSnapshot: ActivatedRoute,
         private router: Router,
         private changeDetectorRef: ChangeDetectorRef,
     ) {
-    }
-
-    ngOnDestroy(): void{
-        this.ngUnsubscribe.next(true);
-        this.ngUnsubscribe.complete();
+        super();
     }
 
     ngOnInit(): void{
-        sttEmitter.authEmitter.pipe(takeUntil(this.ngUnsubscribe)).subscribe((auth) => {
+        sttEmitter.authEmitter.pipe(takeUntil(this.destroy$)).subscribe((auth) => {
             this.login = auth;
             this.changeDetectorRef.markForCheck();
         });
@@ -39,7 +35,7 @@ export class SttHeaderComponent implements OnInit, OnDestroy{
         this.sttAuthService.logout();
     }
     onAdminPanel(): void{
-        this.sttAuthService.user().pipe(takeUntil(this.ngUnsubscribe)).subscribe({ next: () => {
+        this.sttAuthService.user().pipe(takeUntil(this.destroy$)).subscribe({ next: () => {
             this.router.navigate(["/admin"]);
         }, error: () => {
             this.router.navigate(["/login"]);

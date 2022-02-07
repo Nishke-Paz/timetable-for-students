@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { SttAuthService } from "../../stt-services/stt-auth.service";
 import { Router } from "@angular/router";
-import { Subject, takeUntil } from "rxjs";
+import { takeUntil } from "rxjs";
 import { sttEmitter } from "../../stt-emitters/stt-emitter";
+import { RxUnsubscribeComponent } from "../../rx-unsubscribe";
 
 
 @Component({
@@ -12,22 +13,17 @@ import { sttEmitter } from "../../stt-emitters/stt-emitter";
     styleUrls: ["./stt-login.component.less"],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SttLoginComponent implements OnDestroy{
+export class SttLoginComponent extends RxUnsubscribeComponent{
     emailError = false;
     passwordError = false;
     error: string | null = null;
-    private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
 
     constructor(
         private sttAuthService: SttAuthService,
         private router: Router,
         private changeDetectorRef: ChangeDetectorRef,
         ) {
-    }
-
-    ngOnDestroy(): void{
-        this.ngUnsubscribe.next(true);
-        this.ngUnsubscribe.complete();
+        super();
     }
 
     form: FormGroup = new FormGroup({
@@ -41,7 +37,7 @@ export class SttLoginComponent implements OnDestroy{
             this.form.controls["password"].invalid ? this.passwordError = true : this.passwordError = false;
         } else {
                 this.sttAuthService.auth(this.form.getRawValue())
-                    .pipe(takeUntil(this.ngUnsubscribe))
+                    .pipe(takeUntil(this.destroy$))
                     .subscribe({ next: () => {
                 sttEmitter.authEmitter.emit(false);
                 this.error = null;

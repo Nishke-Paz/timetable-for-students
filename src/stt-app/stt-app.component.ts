@@ -1,10 +1,11 @@
 import {
     ChangeDetectionStrategy,
-    Component, OnDestroy, OnInit,
+    Component, OnInit,
 } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { sttEmitter } from "./stt-emitters/stt-emitter";
-import { Subject, takeUntil } from "rxjs";
+import { takeUntil } from "rxjs";
+import { RxUnsubscribeComponent } from "./rx-unsubscribe";
 
 @Component({
     selector: "stt-app-root",
@@ -12,17 +13,13 @@ import { Subject, takeUntil } from "rxjs";
     styleUrls: [],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SttAppComponent implements OnInit, OnDestroy{
-    private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
+export class SttAppComponent extends RxUnsubscribeComponent implements OnInit{
     constructor(private httpClient: HttpClient) {
-    }
-    ngOnDestroy(): void{
-        this.ngUnsubscribe.next(true);
-        this.ngUnsubscribe.complete();
+        super();
     }
     ngOnInit(): void{
         this.httpClient.get(("/api/user"), { withCredentials: true })
-            .pipe(takeUntil(this.ngUnsubscribe))
+            .pipe(takeUntil(this.destroy$))
             .subscribe({ next: () => {
                 sttEmitter.authEmitter.emit(false);
         },  error: () => {
