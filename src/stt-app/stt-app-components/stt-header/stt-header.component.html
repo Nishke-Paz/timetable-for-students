@@ -1,0 +1,9 @@
+<mat-toolbar class="toolbar mat-toolbar-single-row">
+    <button routerLink="/" mat-button><h1>Расписание</h1></button>
+    <div>
+        <button (click)="onAdminPanel()" mat-raised-button>Панель администратора</button>
+        <button routerLink="/login" *ngIf="login" mat-raised-button>Войти</button>
+        <button routerLink="/login" *ngIf="!login" (click)="logout()" mat-raised-button>Выйти</button>
+    </div>
+</mat-toolbar>
+<router-outlet></router-outlet>
