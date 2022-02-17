@@ -10,5 +10,13 @@
   "/api/logout": {
     "target": "http://localhost:3000/",
     "secure": false
+  },
+  "/timetable": {
+    "target": "http://localhost:3000/",
+    "secure": false
+  },
+  "/timetable/findById": {
+    "target": "http://localhost:3000/",
+    "secure": false
   }
 }

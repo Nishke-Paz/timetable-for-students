@@ -11,10 +11,17 @@ import { SttNotFoundComponent } from "./stt-app-components/stt-not-found/stt-not
 import { SttHeaderComponent } from "./stt-app-components/stt-header/stt-header.component";
 import { SttLoginComponent } from "./stt-app-components/stt-login/stt-login.component";
 import { SttAdminPanelComponent } from "./stt-app-components/stt-admin-panel/stt-admin-panel.component";
-import { SttUserComponent } from "./stt-app-components/stt-user/stt-user.component";
 import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
+import { StoreModule } from "@ngrx/store";
+import { reducers } from "./stt-store/state/stt-app.state";
+import { EffectsModule } from "@ngrx/effects";
+import { SttTimetableEffects } from "./stt-store/stt-timetable.effects";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { SttSearchComponent } from "./stt-app-components/stt-search/stt-search.component";
+import { CookieService } from "ngx-cookie-service";
 
 @NgModule({
     declarations: [
@@ -23,22 +30,26 @@ import { MatInputModule } from "@angular/material/input";
         SttHeaderComponent,
         SttLoginComponent,
         SttNotFoundComponent,
-        SttUserComponent,
+        SttSearchComponent,
     ],
     imports: [
+        StoreModule.forRoot(reducers),
+        EffectsModule.forRoot([SttTimetableEffects]),
         BrowserAnimationsModule,
         BrowserModule,
         FormsModule,
         HttpClientModule,
+        MatAutocompleteModule,
         MatButtonModule,
         MatCardModule,
         MatFormFieldModule,
         MatInputModule,
+        MatProgressSpinnerModule,
         MatToolbarModule,
         ReactiveFormsModule,
         SttAppRoutingModule,
     ],
-    providers: [],
+    providers: [CookieService],
     bootstrap: [SttAppComponent],
 })
 export class SttAppModule {

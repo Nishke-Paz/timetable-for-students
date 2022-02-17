@@ -1,0 +1,69 @@
+<h2 [class.name-group]="!search">{{title}}</h2>
+<button *ngIf="!search" (click)="changeGroup()" class="button-change-group" mat-button>Изменить группу</button>
+<div *ngIf="!search">
+    <div  *ngFor="let item of currentGroup | async">
+        <h3>Понедельник</h3>
+        <p *ngIf="item.monday.length === 0">(нет пар)</p>
+        <div *ngFor="let lesson of item.monday">
+            <h4>{{lesson.subject}} ({{lesson.typeLesson}})</h4>
+            <p>время: {{lesson.time}}</p>
+            <p>аудитория: {{lesson.lectureHall}}</p>
+            <p>преподаватель: {{lesson.teacher}}</p>
+        </div>
+        <h3>Вторник</h3>
+        <p *ngIf="item.tuesday.length === 0">(нет пар)</p>
+        <div *ngFor="let lesson of item.tuesday">
+            <h4>{{lesson.subject}} ({{lesson.typeLesson}})</h4>
+            <p>время: {{lesson.time}}</p>
+            <p>аудитория: {{lesson.lectureHall}}</p>
+            <p>преподаватель: {{lesson.teacher}}</p>
+        </div>
+        <h3>Среда</h3>
+        <p *ngIf="item.wednesday.length === 0">(нет пар)</p>
+        <div *ngFor="let lesson of item.wednesday">
+            <h4>{{lesson.subject}} ({{lesson.typeLesson}})</h4>
+            <p>время: {{lesson.time}}</p>
+            <p>аудитория: {{lesson.lectureHall}}</p>
+            <p>преподаватель: {{lesson.teacher}}</p>
+        </div>
+        <h3>Четверг</h3>
+        <p *ngIf="item.thursday.length === 0">(нет пар)</p>
+        <div *ngFor="let lesson of item.thursday">
+            <h4>{{lesson.subject}} ({{lesson.typeLesson}})</h4>
+            <p>время: {{lesson.time}}</p>
+            <p>аудитория: {{lesson.lectureHall}}</p>
+            <p>преподаватель: {{lesson.teacher}}</p>
+        </div>
+        <h3>Пятница</h3>
+        <p *ngIf="item.friday.length === 0">(нет пар)</p>
+        <div *ngFor="let lesson of item.friday">
+            <h4>{{lesson.subject}} ({{lesson.typeLesson}})</h4>
+            <p>время: {{lesson.time}}</p>
+            <p>аудитория: {{lesson.lectureHall}}</p>
+            <p>преподаватель: {{lesson.teacher}}</p>
+        </div>
+        <h3>Суббота</h3>
+        <p *ngIf="item.saturday.length === 0">(нет пар)</p>
+        <div *ngFor="let lesson of item.saturday">
+            <h4>{{lesson.subject}} ({{lesson.typeLesson}})</h4>
+            <p>время: {{lesson.time}}</p>
+            <p>аудитория: {{lesson.lectureHall}}</p>
+            <p>преподаватель: {{lesson.teacher}}</p>
+        </div>
+    </div>
+</div>
+
+<form class="example-form" (submit)="onSubmit()" *ngIf="search">
+    <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>Название группы</mat-label>
+        <input type="text" matInput [formControl]="timetableControl" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                {{option.group}}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+    <button mat-flat-button color="primary">Загрузить расписание</button>
+</form>
+
+<p class="error-message" *ngIf="errorMessage">{{errorMessage}}</p>
