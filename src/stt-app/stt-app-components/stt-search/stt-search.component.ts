@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { SttGroup } from "../../stt-store/state/stt-group-list.state";
 import { FormControl, Validators } from "@angular/forms";
 import { map, Observable, startWith, takeUntil } from "rxjs";
-import { selectListGroup } from "../../stt-store/selectors/stt-list-group.selector";
+import { selectAllGroups } from "../../stt-store/selectors/stt-list-group.selector";
 import { Store } from "@ngrx/store";
 import { ActivatedRoute, Router } from "@angular/router";
 import { RxUnsubscribeComponent } from "../../rx-unsubscribe";
@@ -11,6 +10,7 @@ import { CookieService } from "ngx-cookie-service";
 import { selectCurrentGroup } from "../../stt-store/selectors/stt-current-group.selector";
 import { SttTimetable } from "../../stt-store/state/stt-group.state";
 import { loadGroup } from "../../stt-store/actions/stt-current-group.actions";
+import { SttGroupModel } from "../../stt-store/model/stt-group.model";
 
 @Component({
     selector: "stt-search",
@@ -20,11 +20,11 @@ import { loadGroup } from "../../stt-store/actions/stt-current-group.actions";
 })
 export class SttSearchComponent extends RxUnsubscribeComponent implements OnInit{
     title: string = "Выберите группу";
-    groups: SttGroup[];
+    groups: SttGroupModel[];
     search: boolean = true;
     errorMessage: string = "";
     timetableControl = new FormControl("", [Validators.required]);
-    filteredOptions: Observable<SttGroup[]>;
+    filteredOptions: Observable<SttGroupModel[]>;
     currentGroup: Observable<SttTimetable[]>;
 
     ngOnInit(): void{
@@ -59,7 +59,7 @@ export class SttSearchComponent extends RxUnsubscribeComponent implements OnInit
             this.changeDetectorRef.markForCheck();
             this.currentGroup = this.store.select(selectCurrentGroup).pipe(takeUntil(this.destroy$));
         }
-        this.store.select(selectListGroup).pipe(takeUntil(this.destroy$)).subscribe((data) => {
+        this.store.select(selectAllGroups).pipe(takeUntil(this.destroy$)).subscribe((data) => {
             this.groups = data;
             this.filteredOptions = this.timetableControl.valueChanges.pipe(
                 startWith(""),
@@ -79,12 +79,12 @@ export class SttSearchComponent extends RxUnsubscribeComponent implements OnInit
         super();
     }
 
-    private _filter(name: string): SttGroup[] {
+    private _filter(name: string): SttGroupModel[] {
         const filterValue = name.toLowerCase();
         return this.groups.filter((option) => option.group.toLowerCase().includes(filterValue));
     }
 
-    displayFn(group: SttGroup): string {
+    displayFn(group: SttGroupModel): string {
         return group?.group ? group.group : "";
     }
 

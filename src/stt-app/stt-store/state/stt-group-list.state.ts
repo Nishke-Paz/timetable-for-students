@@ -1,13 +1,13 @@
+import { createEntityAdapter, EntityAdapter, EntityState } from "@ngrx/entity";
+import { SttGroupModel } from "../model/stt-group.model";
 
-export interface SttGroup{
-    id: number;
-    group: string;
+
+export interface SttGroupListState extends EntityState<SttGroupModel>{
+    selectedUserId: number | null;
 }
 
-export interface SttGroupListState {
-    groups: SttGroup[];
-}
+export const sttGroupListAdapter: EntityAdapter<SttGroupModel> = createEntityAdapter<SttGroupModel>();
 
-export const initialSttGroupListState: SttGroupListState = {
-    groups: []
-};
+export const initialSttGroupListState: SttGroupListState = sttGroupListAdapter.getInitialState({
+    selectedUserId: null
+});

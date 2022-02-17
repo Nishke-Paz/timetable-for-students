@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { SttGroup } from "../stt-store/state/stt-group-list.state";
 import { SttTimetable } from "../stt-store/state/stt-group.state";
+import { SttGroupModel } from "../stt-store/model/stt-group.model";
 
 
 @Injectable({
@@ -12,8 +12,8 @@ export class SttServerService{
     constructor(private httpClient: HttpClient) {
     }
 
-    getListGroup(): Observable<SttGroup[]>{
-        return this.httpClient.get<SttGroup[]>("/timetable");
+    getListGroup(): Observable<SttGroupModel[]>{
+        return this.httpClient.get<SttGroupModel[]>("/timetable");
     }
 
     getGroupById(idGroup: number): Observable<SttTimetable[]>{

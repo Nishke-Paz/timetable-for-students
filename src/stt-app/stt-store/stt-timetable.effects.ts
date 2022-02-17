@@ -4,8 +4,8 @@ import { SttServerService } from "../stt-services/stt-server.service";
 import { loadGroup, loadGroupSuccess } from "./actions/stt-current-group.actions";
 import { map, mergeMap } from "rxjs";
 import { loadGroups, loadGroupsSuccess } from "./actions/stt-group-list.actions";
-import { SttGroup } from "./state/stt-group-list.state";
 import { SttTimetable } from "./state/stt-group.state";
+import { SttGroupModel } from "./model/stt-group.model";
 
 
 @Injectable({
@@ -21,7 +21,7 @@ export class SttTimetableEffects{
             ofType(loadGroups),
             mergeMap(() =>
                 this.service.getListGroup().pipe(
-                    map((groupList: SttGroup[]) =>  loadGroupsSuccess({ groups: groupList })),
+                    map((groupList: SttGroupModel[]) =>  loadGroupsSuccess({ groups: groupList })),
                 ),
             ),
         );
