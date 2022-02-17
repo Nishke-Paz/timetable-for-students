@@ -22,6 +22,9 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { SttSearchComponent } from "./stt-app-components/stt-search/stt-search.component";
 import { CookieService } from "ngx-cookie-service";
+import { MatMenuModule } from "@angular/material/menu";
+import { MatIconModule } from "@angular/material/icon";
+import { SttTimePipe } from "./stt-app-components/stt-pipes/stt-time.pipe";
 
 @NgModule({
     declarations: [
@@ -31,6 +34,7 @@ import { CookieService } from "ngx-cookie-service";
         SttLoginComponent,
         SttNotFoundComponent,
         SttSearchComponent,
+        SttTimePipe,
     ],
     imports: [
         StoreModule.forRoot(reducers),
@@ -43,7 +47,9 @@ import { CookieService } from "ngx-cookie-service";
         MatButtonModule,
         MatCardModule,
         MatFormFieldModule,
+        MatIconModule,
         MatInputModule,
+        MatMenuModule,
         MatProgressSpinnerModule,
         MatToolbarModule,
         ReactiveFormsModule,

@@ -1,9 +1,26 @@
 <mat-toolbar class="toolbar mat-toolbar-single-row">
     <button (click)="onUserPanel()" mat-button><h1>Расписание</h1></button>
-    <div>
+    <div class="menu">
         <button (click)="onAdminPanel()" mat-raised-button>Панель администратора</button>
         <button routerLink="/login" *ngIf="login" mat-raised-button>Войти</button>
         <button routerLink="/login" *ngIf="!login" (click)="logout()" mat-raised-button>Выйти</button>
     </div>
+    <button class="menu-button" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+        <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+        <button (click)="onAdminPanel()" mat-menu-item>
+            <mat-icon>perm_identity</mat-icon>
+            <span>Панель администратора</span>
+        </button>
+        <button routerLink="/login" *ngIf="login" mat-menu-item>
+            <mat-icon>account_circle</mat-icon>
+            <span>Войти</span>
+        </button>
+        <button routerLink="/login" *ngIf="!login" (click)="logout()" mat-menu-item>
+            <mat-icon>highlight_off</mat-icon>
+            <span>Выйти</span>
+        </button>
+    </mat-menu>
 </mat-toolbar>
 <router-outlet></router-outlet>
