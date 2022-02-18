@@ -1,67 +1,69 @@
 <h2 [class.name-group]="!search">{{title}}</h2>
 <button *ngIf="!search" (click)="changeGroup()" class="button-change-group" mat-button>Изменить группу</button>
+
+<ng-template #lessonTemplate let-dayForObject="dayForObject" let-dayForTitle="dayForTitle" let-timetable="timetable">
+    <div class="timetable__dayOfTheWeek">
+        <h3 class="timetable__day-title">{{dayForTitle}}</h3>
+        <p *ngIf="timetable[dayForObject].length === 0">(нет пар)</p>
+        <div class="timetable__lesson" *ngFor="let lesson of timetable[dayForObject]">
+            <h4 class="name-subject">{{lesson.subject}} ({{lesson.typeLesson}})</h4>
+            <p>{{lesson.time | time}}</p>
+            <p>аудитория: {{lesson.lectureHall}}</p>
+            <p>преподаватель: {{lesson.teacher}}</p>
+        </div>
+    </div>
+</ng-template>
+
 <div *ngIf="!search">
     <div class="timetable"  *ngFor="let item of currentGroup | async">
-        <div class="timetable__dayOfTheWeek">
-            <h3 class="timetable__day-title">ПОНЕДЕЛЬНИК</h3>
-            <p *ngIf="item.monday.length === 0">(нет пар)</p>
-            <div class="timetable__lesson" *ngFor="let lesson of item.monday">
-                <h4 class="name-subject">{{lesson.subject}} ({{lesson.typeLesson}})</h4>
-                <p>{{lesson.time | time}}</p>
-                <p>аудитория: {{lesson.lectureHall}}</p>
-                <p>преподаватель: {{lesson.teacher}}</p>
-            </div>
-        </div>
-        <div [class.day-without-work]="item.tuesday.length === 0" class="timetable__dayOfTheWeek">
-            <h3 class="timetable__day-title">ВТОРНИК</h3>
-            <p *ngIf="item.tuesday.length === 0">(нет пар)</p>
-            <div class="timetable__lesson" *ngFor="let lesson of item.tuesday">
-                <h4>{{lesson.subject}} ({{lesson.typeLesson}})</h4>
-                <p>{{lesson.time | time}}</p>
-                <p>аудитория: {{lesson.lectureHall}}</p>
-                <p>преподаватель: {{lesson.teacher}}</p>
-            </div>
-        </div>
-        <div class="timetable__dayOfTheWeek">
-            <h3 class="timetable__day-title">СРЕДА</h3>
-            <p *ngIf="item.wednesday.length === 0">(нет пар)</p>
-            <div class="timetable__lesson" *ngFor="let lesson of item.wednesday">
-                <h4>{{lesson.subject}} ({{lesson.typeLesson}})</h4>
-                <p>{{lesson.time | time}}</p>
-                <p>аудитория: {{lesson.lectureHall}}</p>
-                <p>преподаватель: {{lesson.teacher}}</p>
-            </div>
-        </div>
-        <div class="timetable__dayOfTheWeek">
-            <h3 class="timetable__day-title">ЧЕТВЕРГ</h3>
-            <p *ngIf="item.thursday.length === 0">(нет пар)</p>
-            <div class="timetable__lesson" *ngFor="let lesson of item.thursday">
-                <h4>{{lesson.subject}} ({{lesson.typeLesson}})</h4>
-                <p>{{lesson.time | time}}</p>
-                <p>аудитория: {{lesson.lectureHall}}</p>
-                <p>преподаватель: {{lesson.teacher}}</p>
-            </div>
-        </div>
-        <div class="timetable__dayOfTheWeek">
-            <h3 class="timetable__day-title">ПЯТНИЦА</h3>
-            <p *ngIf="item.friday.length === 0">(нет пар)</p>
-            <div class="timetable__lesson" *ngFor="let lesson of item.friday">
-                <h4>{{lesson.subject}} ({{lesson.typeLesson}})</h4>
-                <p>{{lesson.time | time}}</p>
-                <p>аудитория: {{lesson.lectureHall}}</p>
-                <p>преподаватель: {{lesson.teacher}}</p>
-            </div>
-        </div>
-        <div class="timetable__dayOfTheWeek">
-            <h3 class="timetable__day-title">СУББОТА</h3>
-            <p *ngIf="item.saturday.length === 0">(нет пар)</p>
-            <div class="timetable__lesson" *ngFor="let lesson of item.saturday">
-                <h4>{{lesson.subject}} ({{lesson.typeLesson}})</h4>
-                <p>{{lesson.time | time}}</p>
-                <p>аудитория: {{lesson.lectureHall}}</p>
-                <p>преподаватель: {{lesson.teacher}}</p>
-            </div>
-        </div>
+        <template
+                  [ngTemplateOutlet]="lessonTemplate"
+                  [ngTemplateOutletContext]="{
+                      dayForObject: 'monday',
+                      dayForTitle: 'ПОНЕДЕЛЬНИК',
+                      timetable: item
+                  }">
+        </template>
+        <template
+                [ngTemplateOutlet]="lessonTemplate"
+                [ngTemplateOutletContext]="{
+                      dayForObject: 'tuesday',
+                      dayForTitle: 'ВТОРНИК',
+                      timetable: item
+                  }">
+        </template>
+        <template
+                [ngTemplateOutlet]="lessonTemplate"
+                [ngTemplateOutletContext]="{
+                      dayForObject: 'wednesday',
+                      dayForTitle: 'СРЕДА',
+                      timetable: item
+                  }">
+        </template>
+        <template
+                [ngTemplateOutlet]="lessonTemplate"
+                [ngTemplateOutletContext]="{
+                      dayForObject: 'thursday',
+                      dayForTitle: 'ЧЕТВЕРГ',
+                      timetable: item
+                  }">
+        </template>
+        <template
+                [ngTemplateOutlet]="lessonTemplate"
+                [ngTemplateOutletContext]="{
+                      dayForObject: 'friday',
+                      dayForTitle: 'ПЯТНИЦА',
+                      timetable: item
+                  }">
+        </template>
+        <template
+                [ngTemplateOutlet]="lessonTemplate"
+                [ngTemplateOutletContext]="{
+                      dayForObject: 'saturday',
+                      dayForTitle: 'СУББОТА',
+                      timetable: item
+                  }">
+        </template>
     </div>
 </div>
 
