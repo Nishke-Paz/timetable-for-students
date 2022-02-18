@@ -14,7 +14,7 @@ import { CookieService } from "ngx-cookie-service";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SttHeaderComponent extends RxUnsubscribeComponent implements OnInit{
-    login: boolean = false;
+    login: boolean = true;
     constructor(
         private sttAuthService: SttAuthService,
         private activatedRouteSnapshot: ActivatedRoute,
@@ -36,11 +36,6 @@ export class SttHeaderComponent extends RxUnsubscribeComponent implements OnInit
             this.login = auth;
             this.changeDetectorRef.markForCheck();
         });
-    }
-
-    logout(): void{
-        sttEmitter.authEmitter.emit(true);
-        this.sttAuthService.logout();
     }
     onAdminPanel(): void{
         this.sttAuthService.user().pipe(takeUntil(this.destroy$)).subscribe({ next: () => {
