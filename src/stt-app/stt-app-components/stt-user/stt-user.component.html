@@ -1,6 +1,14 @@
 <h2 [class.name-group]="!search">{{title}}</h2>
 <button *ngIf="!search" (click)="changeGroup()" class="button-change-group" mat-button>Изменить группу</button>
 
+<ng-container *ngIf="search">
+    <stt-search-group class="form"
+                      *ngIf="search"
+                      (titleLoading)="loadTitle($event)"
+                      (groupLoading)="loadGroup($event)">
+    </stt-search-group>
+</ng-container>
+
 <ng-template #lessonTemplate let-dayForObject="dayForObject" let-dayForTitle="dayForTitle" let-timetable="timetable">
     <div class="timetable__dayOfTheWeek">
         <h3 class="timetable__day-title">{{dayForTitle}}</h3>
@@ -14,7 +22,7 @@
     </div>
 </ng-template>
 
-<div *ngIf="!search">
+<ng-container *ngIf="!search">
     <div class="timetable"  *ngFor="let item of currentGroup | async">
         <template
                   [ngTemplateOutlet]="lessonTemplate"
@@ -65,19 +73,4 @@
                   }">
         </template>
     </div>
-</div>
-
-<form class="form" (submit)="onSubmit()" *ngIf="search">
-    <mat-form-field class="form__full-width" appearance="fill">
-        <mat-label>Название группы</mat-label>
-        <input type="text" matInput [formControl]="timetableControl" [matAutocomplete]="auto">
-        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-                {{option.group}}
-            </mat-option>
-        </mat-autocomplete>
-    </mat-form-field>
-    <button mat-flat-button color="primary">Загрузить расписание</button>
-</form>
-
-<p class="error-message" *ngIf="errorMessage">{{errorMessage}}</p>
+</ng-container>

@@ -19,4 +19,8 @@ export class SttServerService{
     getGroupById(idGroup: number): Observable<SttTimetable[]>{
         return this.httpClient.post<SttTimetable[]>("/timetable/findById", { id: idGroup });
     }
+
+    deleteLesson(id: number): Observable<unknown>{
+        return this.httpClient.delete(`/timetable/${id}/deleteLesson`);
+    }
 }

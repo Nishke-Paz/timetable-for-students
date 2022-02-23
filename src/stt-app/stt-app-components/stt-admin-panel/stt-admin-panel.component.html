@@ -1,2 +1,74 @@
+<h2 [class.name-group]="!search">{{title}}</h2>
+<button mat-button class="button-change-group" *ngIf="!search" (click)="changeGroup()">Изменить группу</button>
 
-<h3>Панель администратора</h3>
+<ng-container *ngIf="search">
+    <stt-search-group class="form" (titleLoading)="title=$event" (groupLoading)="groupLoading($event)"></stt-search-group>
+</ng-container>
+
+<ng-template #lessonTemplate let-dayOfTheWeek="week" let-day="day">
+    <tr *ngFor="let lesson of dayOfTheWeek">
+        <td>{{day}}</td>
+        <td>{{lesson.subject}}</td>
+        <td>{{lesson.time | time}}</td>
+        <td>{{lesson.typeLesson}}</td>
+        <td>{{lesson.teacher}}</td>
+        <td>{{lesson.lectureHall}}</td>
+        <td class="last-td"><button (click)="remove(lesson.id)" class="icon" mat-stroked-button>✖</button></td>
+    </tr>
+</ng-template>
+
+<div *ngIf="!search">
+    <table>
+        <thead>
+            <tr>
+                <th>День недели</th>
+                <th>Предмет</th>
+                <th>Время</th>
+                <th>Вид занятия</th>
+                <th>Преподаватель</th>
+                <th>Аудитория</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngFor="let item of currentGroup | async">
+                <template [ngTemplateOutlet]="lessonTemplate"
+                          [ngTemplateOutletContext]="{
+                            day: 'понедельник',
+                            week: item.monday
+                          }">
+                </template>
+                <template [ngTemplateOutlet]="lessonTemplate"
+                          [ngTemplateOutletContext]="{
+                            day: 'вторник',
+                            week: item.tuesday
+                          }">
+                </template>
+                <template [ngTemplateOutlet]="lessonTemplate"
+                          [ngTemplateOutletContext]="{
+                            day: 'среда',
+                            week: item.wednesday
+                          }">
+                </template>
+                <template [ngTemplateOutlet]="lessonTemplate"
+                          [ngTemplateOutletContext]="{
+                            day: 'четверг',
+                            week: item.thursday
+                          }">
+                </template>
+                <template [ngTemplateOutlet]="lessonTemplate"
+                          [ngTemplateOutletContext]="{
+                            day: 'пятница',
+                            week: item.friday
+                          }">
+                </template>
+                <template [ngTemplateOutlet]="lessonTemplate"
+                          [ngTemplateOutletContext]="{
+                            day: 'суббота',
+                            week: item.saturday
+                          }">
+                </template>
+            </ng-container>
+        </tbody>
+    </table>
+</div>

@@ -25,10 +25,10 @@ export class SttHeaderComponent extends RxUnsubscribeComponent implements OnInit
         super();
     }
     onUserPanel(): void{
-        if (this.cookie.check("id")){
-            this.router.navigate(["/search"], { queryParams: { id: this.cookie.get("id") } });
+        if (this.cookie.check("user-panel-id")){
+            this.router.navigate(["/user"], { queryParams: { id: this.cookie.get("user-panel-id") } });
         } else {
-            this.router.navigate(["/search"]);
+            this.router.navigate(["/user"]);
         }
     }
     ngOnInit(): void{
@@ -39,7 +39,11 @@ export class SttHeaderComponent extends RxUnsubscribeComponent implements OnInit
     }
     onAdminPanel(): void{
         this.sttAuthService.user().pipe(takeUntil(this.destroy$)).subscribe({ next: () => {
-            this.router.navigate(["/admin"]);
+            if (this.cookie.check("admin-panel-id")){
+                this.router.navigate(["/admin"], { queryParams: { id: this.cookie.get("admin-panel-id") } });
+            } else {
+                this.router.navigate(["/admin"]);
+            }
         }, error: () => {
             this.router.navigate(["/login"]);
         } });
