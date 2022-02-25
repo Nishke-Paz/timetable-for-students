@@ -1,0 +1,15 @@
+
+<form class="form" (submit)="onSubmit()" *ngIf="true">
+    <mat-form-field class="form__full-width" appearance="fill">
+        <mat-label>Название группы</mat-label>
+        <input type="text" matInput [formControl]="timetableControl" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                {{option.group}}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+    <button mat-flat-button color="primary">Загрузить расписание</button>
+</form>
+
+<p class="error-message" *ngIf="errorMessage">{{errorMessage}}</p>

@@ -11,13 +11,3 @@ export const loadGroupSuccess = createAction(
     props<{ timetable: SttTimetable[] }>(),
 );
 
-export const editTimetable = createAction(
-    "[Current-group] editTimetable",
-    props<{ timetable: SttTimetable }>(),
-);
-
-export const editTimetableSuccess = createAction(
-    "[Current-group] editTimetableSuccess",
-    props<{ timetable: SttTimetable }>(),
-);
-

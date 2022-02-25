@@ -20,11 +20,13 @@ import { EffectsModule } from "@ngrx/effects";
 import { SttTimetableEffects } from "./stt-store/stt-timetable.effects";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
-import { SttSearchComponent } from "./stt-app-components/stt-search/stt-search.component";
+import { SttUserComponent } from "./stt-app-components/stt-user/stt-user.component";
 import { CookieService } from "ngx-cookie-service";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatIconModule } from "@angular/material/icon";
 import { SttTimePipe } from "./stt-app-components/stt-pipes/stt-time.pipe";
+import { SttSearchGroupComponent } from "./stt-app-components/stt-search-group/stt-search-group.component";
+import { StoreDevtoolsModule } from "@ngrx/store-devtools";
 
 @NgModule({
     declarations: [
@@ -33,12 +35,14 @@ import { SttTimePipe } from "./stt-app-components/stt-pipes/stt-time.pipe";
         SttHeaderComponent,
         SttLoginComponent,
         SttNotFoundComponent,
-        SttSearchComponent,
+        SttSearchGroupComponent,
         SttTimePipe,
+        SttUserComponent,
     ],
     imports: [
         StoreModule.forRoot(reducers),
         EffectsModule.forRoot([SttTimetableEffects]),
+        StoreDevtoolsModule.instrument(),
         BrowserAnimationsModule,
         BrowserModule,
         FormsModule,

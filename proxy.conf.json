@@ -18,5 +18,9 @@
   "/timetable/findById": {
     "target": "http://localhost:3000/",
     "secure": false
+  },
+  "/timetable/:id/deleteLesson": {
+    "target": "http://localhost:3000/",
+    "secure": false
   }
 }

@@ -8,8 +8,8 @@ import { takeUntil } from "rxjs";
 import { RxUnsubscribeComponent } from "./rx-unsubscribe";
 import { loadGroups } from "./stt-store/actions/stt-group-list.actions";
 import { Store } from "@ngrx/store";
-import { CookieService } from "ngx-cookie-service";
 import { loadGroup } from "./stt-store/actions/stt-current-group.actions";
+import { loadGroupForAdmin } from "./stt-store/actions/stt-group-for-admin.actions";
 
 @Component({
     selector: "stt-app-root",
@@ -20,14 +20,16 @@ import { loadGroup } from "./stt-store/actions/stt-current-group.actions";
 export class SttAppComponent extends RxUnsubscribeComponent implements OnInit{
     constructor(
         private httpClient: HttpClient,
-        private store: Store,
-        private cookie: CookieService) {
+        private store: Store) {
         super();
     }
     ngOnInit(): void{
         this.store.dispatch(loadGroups());
-        if (this.cookie.check("group")){
-            this.store.dispatch(loadGroup({ id: Number(this.cookie.get("id")) }));
+        if (localStorage.getItem("user-panel-group")){
+            this.store.dispatch(loadGroup({ id: Number(localStorage.getItem("user-panel-id")) }));
+        }
+        if (localStorage.getItem("admin-panel-group")){
+            this.store.dispatch(loadGroupForAdmin({ id: Number(localStorage.getItem("admin-panel-id")) }));
         }
         this.httpClient.get(("/api/user"), { withCredentials: true })
             .pipe(takeUntil(this.destroy$))
