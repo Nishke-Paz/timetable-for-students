@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import {  Observable, takeUntil } from "rxjs";
 import { deleteLesson, loadGroupForAdmin } from "../../stt-store/actions/stt-group-for-admin.actions";
-import { CookieService } from "ngx-cookie-service";
 import { ActivatedRoute } from "@angular/router";
 import { Store } from "@ngrx/store";
 import { SttGroupModel } from "../../stt-store/model/stt-group.model";
@@ -24,46 +23,45 @@ export class SttAdminPanelComponent extends RxUnsubscribeComponent implements On
     currentGroup: Observable<SttTimetable[]>;
     constructor(
         private detectionStrategy: ChangeDetectorRef,
-        private cookie: CookieService,
         private activatedRoute: ActivatedRoute,
         private store: Store) {
         super();
     }
     ngOnInit(): void{
-        if (this.cookie.get("admin-panel-id") &&
+        if (localStorage.getItem("admin-panel-id") &&
             this.activatedRoute.snapshot.queryParams.id &&
-            (this.cookie.get(`admin-panel-id`) !== this.activatedRoute.snapshot.queryParams.id)) {
+            (localStorage.getItem(`admin-panel-id`) !== this.activatedRoute.snapshot.queryParams.id)) {
             this.store.dispatch(loadGroupForAdmin({ id: this.activatedRoute.snapshot.queryParams.id }));
             this.store.select(selectGroupForAdmin).pipe(takeUntil(this.destroy$)).subscribe((data) => {
                 if (data.length){
                     this.search = false;
                     this.title = data[0].group;
-                    this.cookie.set("admin-panel-group", data[0].group);
-                    this.cookie.set("admin-panel-id", String(data[0].id));
+                    localStorage.setItem("admin-panel-group", data[0].group);
+                    localStorage.setItem("admin-panel-id", String(data[0].id));
                     this.currentGroup = this.store.select(selectGroupForAdmin);
                 }
             });
-        } else if (this.cookie.get("admin-panel-group")) {
+        } else if (localStorage.getItem("admin-panel-group")) {
             this.search = false;
-            this.title = this.cookie.get("admin-panel-group");
+            this.title = localStorage.getItem("admin-panel-group");
             this.currentGroup = this.store.select(selectGroupForAdmin);
         }
     }
     changeGroup(): void{
         this.search = true;
         this.title = "Выбор группы для редактирования";
-        this.cookie.delete("admin-panel-group");
-        this.cookie.delete("admin-panel-id");
+        localStorage.removeItem("admin-panel-group");
+        localStorage.removeItem("admin-panel-id");
     }
     groupLoading(data: Observable<SttTimetable[]>): void{
         this.currentGroup = data;
         this.search = false;
     }
     remove(id: number): void{
-        this.store.dispatch(deleteLesson({ idLesson: id, idGroup: Number(this.cookie.get("admin-panel-id")) }));
+        this.store.dispatch(deleteLesson({ idLesson: id, idGroup: Number(localStorage.getItem("admin-panel-id")) }));
         this.currentGroup = this.store.select(selectGroupForAdmin);
-        if (this.cookie.get("admin-panel-group") === this.cookie.get("user-panel-group")){
-            this.store.dispatch(loadGroup({ id: Number(this.cookie.get("user-panel-id")) }));
+        if (localStorage.getItem("admin-panel-group") === localStorage.getItem("user-panel-group")){
+            this.store.dispatch(loadGroup({ id: Number(localStorage.getItem("user-panel-id")) }));
         }
     }
 }

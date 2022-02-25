@@ -3,8 +3,6 @@ import { Observable, takeUntil } from "rxjs";
 import { Store } from "@ngrx/store";
 import { ActivatedRoute, Router } from "@angular/router";
 import { RxUnsubscribeComponent } from "../../rx-unsubscribe";
-import { HttpClient } from "@angular/common/http";
-import { CookieService } from "ngx-cookie-service";
 import { selectCurrentGroup } from "../../stt-store/selectors/stt-current-group.selector";
 import { SttTimetable } from "../../stt-store/state/stt-group.state";
 import { loadGroup } from "../../stt-store/actions/stt-current-group.actions";
@@ -24,34 +22,23 @@ export class SttUserComponent extends RxUnsubscribeComponent implements OnInit{
     currentGroup: Observable<SttTimetable[]>;
 
     ngOnInit(): void{
-        if (this.cookie.get("user-panel-id") &&
+        if (localStorage.getItem("user-panel-id") &&
             this.activatedRoute.snapshot.queryParams.id &&
-            (this.cookie.get("user-panel-id") !== this.activatedRoute.snapshot.queryParams.id)) {
+            (localStorage.getItem("user-panel-id") !== this.activatedRoute.snapshot.queryParams.id)) {
             this.store.dispatch(loadGroup({ id: this.activatedRoute.snapshot.queryParams.id }));
             this.store.select(selectCurrentGroup).pipe(takeUntil(this.destroy$)).subscribe((data) => {
                 if (data.length){
                     this.search = false;
                     this.title = data[0].group;
                     this.changeDetectorRef.markForCheck();
-                    this.cookie.set("user-panel-group", data[0].group);
-                    this.cookie.set("user-panel-id", String(data[0].id));
+                    localStorage.setItem("user-panel-group", data[0].group);
+                    localStorage.setItem("user-panel-id", String(data[0].id));
                     this.currentGroup = this.store.select(selectCurrentGroup).pipe(takeUntil(this.destroy$));
-                } else {
-                    this.cookie.delete("user-panel-group");
-                    this.cookie.delete("user-panel-id");
-                    this.search = true;
-                    this.title = "Выберите группу";
-                    this.errorMessage = "расписание для данной группы не найдено";
-                    setTimeout(() => {
-                        this.errorMessage = "";
-                        this.changeDetectorRef.markForCheck();
-                    }, 3000);
-                    this.router.navigate(["/user"]);
                 }
             });
-        } else if (this.cookie.get("user-panel-group")) {
+        } else if (localStorage.getItem("user-panel-group")) {
             this.search = false;
-            this.title = this.cookie.get("user-panel-group");
+            this.title = localStorage.getItem("user-panel-group");
             this.changeDetectorRef.markForCheck();
             this.currentGroup = this.store.select(selectCurrentGroup).pipe(takeUntil(this.destroy$));
         }
@@ -61,16 +48,14 @@ export class SttUserComponent extends RxUnsubscribeComponent implements OnInit{
         private store: Store,
         private changeDetectorRef: ChangeDetectorRef,
         private router: Router,
-        private activatedRoute: ActivatedRoute,
-        private httpClient: HttpClient,
-        private cookie: CookieService) {
+        private activatedRoute: ActivatedRoute) {
         super();
     }
     changeGroup(): void{
         this.search = true;
         this.title = "Выберите группу";
-        this.cookie.delete("user-panel-group");
-        this.cookie.delete("user-panel-id");
+        localStorage.removeItem("user-panel-group");
+        localStorage.removeItem("user-panel-id");
         this.router.navigate(["/user"]);
     }
     loadGroup(data: Observable<SttTimetable[]>): void{

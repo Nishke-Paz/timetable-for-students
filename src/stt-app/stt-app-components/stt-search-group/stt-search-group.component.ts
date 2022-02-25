@@ -8,8 +8,6 @@ import { selectCurrentGroup } from "../../stt-store/selectors/stt-current-group.
 import { selectAllGroups } from "../../stt-store/selectors/stt-list-group.selector";
 import { Store } from "@ngrx/store";
 import { ActivatedRoute, Router } from "@angular/router";
-import { HttpClient } from "@angular/common/http";
-import { CookieService } from "ngx-cookie-service";
 import { RxUnsubscribeComponent } from "../../rx-unsubscribe";
 import { selectGroupForAdmin } from "../../stt-store/selectors/stt-group-for-admin.selector";
 import { loadGroupForAdmin } from "src/stt-app/stt-store/actions/stt-group-for-admin.actions";
@@ -45,9 +43,7 @@ export class SttSearchGroupComponent extends RxUnsubscribeComponent implements O
         private store: Store,
         private changeDetectorRef: ChangeDetectorRef,
         private router: Router,
-        private activatedRoute: ActivatedRoute,
-        private httpClient: HttpClient,
-        private cookie: CookieService) {
+        private activatedRoute: ActivatedRoute) {
         super();
         this.panel = this.activatedRoute.snapshot.url[0].path;
     }
@@ -63,8 +59,8 @@ export class SttSearchGroupComponent extends RxUnsubscribeComponent implements O
 
     onSubmit(): void{
         if (this.timetableControl.value?.["id"]){
-            this.cookie.set(`${this.panel}-panel-group`, this.timetableControl.value["group"]);
-            this.cookie.set(`${this.panel}-panel-id`, this.timetableControl.value["id"]);
+            localStorage.setItem(`${this.panel}-panel-group`, this.timetableControl.value["group"]);
+            localStorage.setItem(`${this.panel}-panel-id`, this.timetableControl.value["id"]);
             if (this.activatedRoute.snapshot.url[0].path === "admin"){
                 this.store.dispatch(loadGroupForAdmin({ id: this.timetableControl.value["id"] }));
                 this.titleLoading.emit(this.timetableControl.value["group"]);
