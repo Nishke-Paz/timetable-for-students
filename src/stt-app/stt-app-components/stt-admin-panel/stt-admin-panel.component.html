@@ -1,9 +1,26 @@
-<h2 [class.name-group]="!search">{{title}}</h2>
-<button mat-button class="button-change-group" *ngIf="!search" (click)="changeGroup()">Изменить группу</button>
+<h2 [class.title]="showTable || addGroup || search">{{title}}</h2>
+<button mat-button class="button-change-group"
+        *ngIf="showTable || addGroup || search"
+        (click)="changeAction()">Выбрать другое действие</button>
 
 <ng-container *ngIf="search">
-    <stt-search-group class="form" (titleLoading)="title=$event" (groupLoading)="groupLoading($event)"></stt-search-group>
+    <stt-search-group (titleLoading)="title=$event" (groupLoading)="groupLoading($event)"></stt-search-group>
 </ng-container>
+
+<button class="buttons-admin"
+        *ngIf="!addGroup && !search && !showTable"
+        (click)="addGroup = true; title = 'Добавить группу'" mat-flat-button color="primary">Добавить группу</button>
+<button class="buttons-admin"
+        *ngIf="!search && !showTable && !addGroup"
+        (click)="search = true; title = 'Загрузить расписание'" mat-flat-button color="primary">Загрузить расписание</button>
+
+<form *ngIf="addGroup" class="form" (submit)="addNewGroup()">
+    <mat-form-field class="form__full-width" appearance="fill">
+        <mat-label>Название группы</mat-label>
+        <input [formControl]="addControl" matInput maxlength="15">
+    </mat-form-field>
+    <button type="submit" mat-flat-button color="primary">Добавить группу</button>
+</form>
 
 <ng-template #lessonTemplate let-dayOfTheWeek="week" let-day="day">
     <tr *ngFor="let lesson of dayOfTheWeek">
@@ -17,7 +34,100 @@
     </tr>
 </ng-template>
 
-<div *ngIf="!search">
+<button class="button-add-group"
+        *ngIf="showTable"
+        (click)="addLesson = true"
+        mat-flat-button color="primary">Добавить занятие</button>
+<div *ngIf="addLesson" class="popup">
+    <fieldset class="popup__fieldset">
+        <legend class="popup__legend">Заполните поля</legend>
+        <span (click)="close()" class="popup__close">закрыть ×</span>
+        <form class="popup__form" [formGroup]="model" novalidate (submit)="onSubmit()">
+            <h3 class="popup__title">Название предмета</h3>
+            <mat-form-field class="popup__input" appearance="fill">
+                <input formControlName="name" matInput>
+            </mat-form-field>
+            <h3 class="popup__title">День недели:</h3>
+            <div class="day">
+                <div class="popup__radio_btn">
+                    <input formControlName="date" id="day-1" type="radio" value="monday" checked>
+                    <label for="day-1">Пн</label>
+                </div>
+                <div class="popup__radio_btn">
+                    <input formControlName="date" id="day-2" type="radio" value="tuesday">
+                    <label for="day-2">Вт</label>
+                </div>
+
+                <div class="popup__radio_btn">
+                    <input formControlName="date" id="day-3" type="radio" value="wednesday">
+                    <label for="day-3">Ср</label>
+                </div>
+
+                <div class="popup__radio_btn">
+                    <input formControlName="date" id="day-4" type="radio" value="thursday">
+                    <label for="day-4">Чт</label>
+                </div>
+
+                <div class="popup__radio_btn">
+                    <input formControlName="date" id="day-5" type="radio" value="friday">
+                    <label for="day-5">Пт</label>
+                </div>
+                <div class="popup__radio_btn">
+                    <input formControlName="date" id="day-6" type="radio" value="saturday">
+                    <label for="day-6">Cуб</label>
+                </div>
+            </div>
+            <h3 class="popup__title">Пара:</h3>
+            <div class="day">
+                <div class="popup__radio_btn">
+                    <input formControlName="numberLesson" id="lesson-1" type="radio" value="1 пара" checked>
+                    <label for="lesson-1">1 пара</label>
+                </div>
+                <div class="popup__radio_btn">
+                    <input formControlName="numberLesson" id="lesson-2" type="radio" value="2 пара">
+                    <label for="lesson-2">2 пара</label>
+                </div>
+
+                <div class="popup__radio_btn">
+                    <input formControlName="numberLesson" id="lesson-3" type="radio" value="3 пара">
+                    <label for="lesson-3">3 пара</label>
+                </div>
+
+                <div class="popup__radio_btn">
+                    <input formControlName="numberLesson" id="lesson-4" type="radio" value="4 пара">
+                    <label for="lesson-4">4 пара</label>
+                </div>
+
+                <div class="popup__radio_btn">
+                    <input formControlName="numberLesson" id="lesson-5" type="radio" value="5 пара">
+                    <label for="lesson-5">5 пара</label>
+                </div>
+
+                <div class="popup__radio_btn">
+                    <input formControlName="numberLesson" id="lesson-6" type="radio" value="6 пара">
+                    <label for="lesson-6">6 пара</label>
+                </div>
+            </div>
+            <h3 class="popup__title">Тип занятия</h3>
+            <mat-form-field class="popup__input" appearance="fill">
+                <input formControlName="lessonType" matInput>
+            </mat-form-field>
+            <h3 class="popup__title">Аудитория</h3>
+            <mat-form-field class="popup__input" appearance="fill">
+                <input formControlName="lectureHall" matInput>
+            </mat-form-field>
+            <h3 class="popup__title">Преподаватель</h3>
+            <mat-form-field class="popup__input" appearance="fill">
+                <input formControlName="teacher" matInput>
+            </mat-form-field>
+            <p class="popup__error">{{errorText}}</p>
+            <p class="popup__feedback">{{feedback}}</p>
+            <button type="submit" class="popup__btn-add" mat-raised-button color="primary">Добавить</button>
+        </form>
+    </fieldset>
+</div>
+
+<div *ngIf="showTable">
     <table class="table-admin">
         <thead>
             <tr>
@@ -31,7 +141,7 @@
             </tr>
         </thead>
         <tbody>
-            <ng-container *ngFor="let item of currentGroup | async">
+            <ng-container #testInfo *ngFor="let item of currentGroup | async">
                 <template [ngTemplateOutlet]="lessonTemplate"
                           [ngTemplateOutletContext]="{
                             day: 'понедельник',

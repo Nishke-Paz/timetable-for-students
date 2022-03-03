@@ -12,7 +12,7 @@ export interface SttTimetable {
 }
 
 export interface SttLesson {
-    id: number;
+    id?: number;
     subject: string;
     teacher: string;
     typeLesson: string;

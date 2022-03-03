@@ -22,5 +22,13 @@
   "/timetable/:id/deleteLesson": {
     "target": "http://localhost:3000/",
     "secure": false
+  },
+  "/timetable/createGroup": {
+    "target": "http://localhost:3000/",
+    "secure": false
+  },
+  "/timetable/:id/:dayOfWeek/addTimetable":{
+    "target": "http://localhost:3000/",
+    "secure": false
   }
 }
