@@ -3,17 +3,22 @@
   margin-right: 20px;
 }
 
-.name-group{
+.title{
   margin-bottom: 0;
 }
 
 .form{
   margin: 0;
+  min-width: 150px;
+  max-width: 250px;
+  width: 100%;
+  &__full-width{
+    width: 100%;
+  }
 }
 
 .button-change-group{
-  margin-bottom: 25px;
-  margin-left: 10px;
+  margin: 0 10px 10px 15px;
   color: #ababab;
 }
 
@@ -21,6 +26,98 @@
   margin: 0;
   padding: 0;
   min-width: 100%;
+}
+
+.buttons-admin{
+  display: block;
+  margin: 20px;
+  width: 180px;
+}
+
+.button-add-group{
+  display: block;
+  margin-bottom: 20px;
+}
+
+.popup{
+  position:fixed;
+  width:100%;
+  height:100%;
+  top:0px;
+  margin: 0;
+  background-color: rgba(0,0,0,0.5);
+  overflow: auto;
+  &__fieldset{
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    max-width: 600px;
+    margin: 40px auto;
+    background-color: white;
+  }
+  &__legend{
+    background-color: white;
+    border: 1px solid rgba(0,0,0,0.5);
+    border-radius: 5px;
+    padding: 3px;
+  }
+  &__form{
+    margin-top: 20px;
+  }
+  &__close{
+    position: relative;
+    float: right;
+    padding: 5px;
+    border-radius: 5px;
+  }
+  &__feedback{
+    color: green;
+  }
+  &__close:hover{
+    background-color: #c2c2c2;
+    cursor: pointer;
+  }
+  &__title{
+    margin: 0;
+  }
+  &__input{
+    margin-top: 5px;
+  }
+  &__btn-add{
+    margin: 0;
+    display: block;
+  }
+  &__error{
+    color: red;
+  }
+  &__radio_btn {
+    display: block;
+    margin: 5px;
+  }
+  &__radio_btn input[type=radio] {
+    display: none;
+  }
+  &__radio_btn label {
+    display: block;
+    cursor: pointer;
+    padding: 10px;
+    margin: 0;
+    border: 1px solid #999;
+    border-radius: 6px;
+    user-select: none;
+    background-color: white;
+    color: black;
+  }
+
+  &__radio_btn input[type=radio]:checked + label {
+    background: darkgray;
+    color: white;
+  }
+
+  &__radio_btn input[type=radio]:disabled + label {
+    background: #efefef;
+    color: #666;
+  }
 }
 
 .last-td{
@@ -46,4 +143,11 @@
     text-align: left;
     background-color: #e8e8e8;
   }
+
+}
+
+.day{
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
 }
