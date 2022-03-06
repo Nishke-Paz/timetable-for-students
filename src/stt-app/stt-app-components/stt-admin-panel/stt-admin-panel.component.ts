@@ -4,7 +4,7 @@ import { deleteLesson, loadGroupForAdmin } from "../../stt-store/actions/stt-gro
 import { ActivatedRoute, Router } from "@angular/router";
 import { Store } from "@ngrx/store";
 import { SttGroupModel } from "../../stt-store/model/stt-group.model";
-import { SttTimetable } from "../../stt-store/state/stt-group.state";
+import { SttLesson, SttTimetable } from "../../stt-store/state/stt-group.state";
 import { selectGroupForAdmin } from "../../stt-store/selectors/stt-group-for-admin.selector";
 import { RxUnsubscribeComponent } from "../../rx-unsubscribe";
 import { loadGroup } from "../../stt-store/actions/stt-current-group.actions";
@@ -25,6 +25,9 @@ export class SttAdminPanelComponent extends RxUnsubscribeComponent implements On
     showTable: boolean = false;
     addGroup: boolean = false;
     addLesson: boolean = false;
+    editLesson: boolean = false;
+    deleteGroup: boolean = false;
+    deleteLesson: boolean = false;
     errorText: string = "";
     feedback: string = "";
     addControl = new FormControl("", [Validators.required]);
@@ -37,6 +40,10 @@ export class SttAdminPanelComponent extends RxUnsubscribeComponent implements On
         lessonType: new FormControl("", [Validators.required]),
     });
     title: string = "Выберите действие";
+    titleForPopup: string = "";
+    idOfCurrentGroup: number;
+    idOfCurrentLesson: number;
+    currentTimeOfCurrentLesson: string;
     groups: SttGroupModel[];
     currentGroup: Observable<SttTimetable[]>;
     constructor(
@@ -84,15 +91,27 @@ export class SttAdminPanelComponent extends RxUnsubscribeComponent implements On
         this.search = false;
         this.showTable = true;
     }
-    remove(id: number): void{
-        this.store.dispatch(deleteLesson({ idLesson: id, idGroup: Number(localStorage.getItem("admin-panel-id")) }));
+    removeLesson(): void{
+        this.store.dispatch(deleteLesson({ idLesson: this.idOfCurrentLesson, idGroup: Number(localStorage.getItem("admin-panel-id")) }));
         this.currentGroup = this.store.select(selectGroupForAdmin);
         if (localStorage.getItem("user-panel-id") === localStorage.getItem("admin-panel-id")){
             this.store.dispatch(loadGroup({ id: Number(localStorage.getItem("user-panel-id")) }));
         }
+        this.deleteLesson = false;
+    }
+    removeGroup(): void{
+        if (localStorage.getItem("admin-panel-id") === localStorage.getItem("user-panel-id")){
+            localStorage.removeItem("user-panel-id");
+            localStorage.removeItem("user-panel-group");
+        }
+        this.sttServerService.deleteGroup(Number(localStorage.getItem("admin-panel-id")));
+        this.store.dispatch(loadGroups());
+        this.deleteGroup = false;
+        this.changeAction();
     }
     close(): void{
         this.addLesson = false;
+        this.editLesson = false;
         this.errorText = "";
         this.model.controls.name.reset();
         this.model.controls.teacher.reset();
@@ -117,40 +136,87 @@ export class SttAdminPanelComponent extends RxUnsubscribeComponent implements On
             this.addControl.reset();
         }
     }
-    async onSubmit(): Promise<void>{
+    async valid(currentTime?: string): Promise<void>{
         this.errorText = "";
-        let id: number;
+        await firstValueFrom(this.store.select(selectGroupForAdmin))
+            .then((data) => {
+                this.idOfCurrentGroup = data[0].id;
+                for (const item of (data[0][`${this.model.controls.date.value}`])){
+                    if (currentTime === item.time){
+                        continue;
+                    }
+                    if (item.time === this.model.controls.numberLesson.value){
+                        this.errorText = "В данную дату и время уже есть занятие";
+                    }
+                }
+            });
+    }
+    updateData(): void {
+        this.store.dispatch(loadGroupForAdmin(
+            { id: Number(localStorage.getItem("admin-panel-id")) },
+        ));
+        this.currentGroup = this.store.select(selectGroupForAdmin);
+        if (localStorage.getItem("user-panel-id") === localStorage.getItem("admin-panel-id")){
+            this.store.dispatch(loadGroup({ id: Number(localStorage.getItem("user-panel-id")) }));
+        }
+    }
+    setValueForModel(lesson: SttLesson, day: string): void{
+        this.model.controls.date.setValue(day);
+        this.model.controls.name.setValue(lesson.subject);
+        this.model.controls.lessonType.setValue(lesson.typeLesson);
+        this.model.controls.teacher.setValue(lesson.teacher);
+        this.model.controls.lectureHall.setValue(lesson.lectureHall);
+        this.model.controls.numberLesson.setValue(lesson.time);
+        this.idOfCurrentLesson = lesson.id;
+        this.currentTimeOfCurrentLesson = lesson.time;
+    }
+    add(): void{
+        this.sttServerService.addTimetable({
+            subject: this.model.controls.name.value,
+            typeLesson: this.model.controls.lessonType.value,
+            teacher: this.model.controls.teacher.value,
+            lectureHall: this.model.controls.lectureHall.value,
+            time: this.model.controls.numberLesson.value
+        }, this.idOfCurrentGroup, this.model.controls.date.value).pipe(takeUntil(this.destroy$)).subscribe(() => {
+            this.updateData();
+            this.feedback = "занятие добавлено";
+            setTimeout(() => {
+                this.feedback = "";
+                this.changeDetectorRef.markForCheck();
+            }, 2500);
+        });
+    }
+    edit(): void{
+        this.sttServerService.editLesson(
+            this.idOfCurrentLesson,
+            Number(localStorage.getItem("admin-panel-id")),
+            this.model.controls.date.value, {
+            subject: this.model.controls.name.value,
+            typeLesson: this.model.controls.lessonType.value,
+            teacher: this.model.controls.teacher.value,
+            lectureHall: this.model.controls.lectureHall.value,
+            time: this.model.controls.numberLesson.value,
+        }).pipe(takeUntil(this.destroy$)).subscribe((data) => {
+            if (!data["affected"]){
+                this.idOfCurrentLesson = data[this.model.controls.date.value][0]["id"];
+            }
+            this.updateData();
+            this.feedback = "занятие обновлено";
+            setTimeout(() => {
+                this.feedback = "";
+                this.changeDetectorRef.markForCheck();
+            }, 2500);
+        });
+    }
+    async onSubmit(): Promise<void>{
         if (this.model.valid) {
-            await firstValueFrom(this.store.select(selectGroupForAdmin))
-                .then((data) => {
-                    id = data[0].id;
-                    for (const item of (data[0][`${this.model.controls.date.value}`])){
-                        if (item.time === this.model.controls.numberLesson.value){
-                            this.errorText = "В данную эту и время уже есть занятие";
-                        }
-                    }
-                });
+            this.editLesson ? await this.valid(this.currentTimeOfCurrentLesson) : await this.valid();
             if (!this.errorText){
-                this.sttServerService.addTimetable({
-                    subject: this.model.controls.name.value,
-                    typeLesson: this.model.controls.lessonType.value,
-                    teacher: this.model.controls.teacher.value,
-                    lectureHall: this.model.controls.lectureHall.value,
-                    time: this.model.controls.numberLesson.value
-                }, id, this.model.controls.date.value).pipe(takeUntil(this.destroy$)).subscribe(() => {
-                    this.store.dispatch(loadGroupForAdmin(
-                        { id: Number(localStorage.getItem("admin-panel-id")) },
-                    ));
-                    this.currentGroup = this.store.select(selectGroupForAdmin);
-                    if (localStorage.getItem("user-panel-id") === localStorage.getItem("admin-panel-id")){
-                        this.store.dispatch(loadGroup({ id: Number(localStorage.getItem("user-panel-id")) }));
-                    }
-                    this.feedback = "занятие добавлено";
-                    setTimeout(() => {
-                        this.feedback = "";
-                        this.changeDetectorRef.markForCheck();
-                    }, 2500);
-                });
+                if (this.addLesson){
+                    this.add();
+                } else {
+                    this.edit();
+                }
             }
         } else {
             this.errorText = "Заполните все поля";

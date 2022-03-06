@@ -1,4 +1,8 @@
-<h2 [class.title]="showTable || addGroup || search">{{title}}</h2>
+<div class="header">
+    <h2 [class.header__title]="showTable || addGroup || search">{{title}}</h2>
+    <button (click)="deleteGroup = true" *ngIf="showTable" class="header__delete">удалить</button>
+</div>
+
 <button mat-button class="button-change-group"
         *ngIf="showTable || addGroup || search"
         (click)="changeAction()">Выбрать другое действие</button>
@@ -22,25 +26,93 @@
     <button type="submit" mat-flat-button color="primary">Добавить группу</button>
 </form>
 
-<ng-template #lessonTemplate let-dayOfTheWeek="week" let-day="day">
+<ng-template #lessonTemplate let-dayOfTheWeek="week" let-day="day" let-dayEn="dayEn">
     <tr *ngFor="let lesson of dayOfTheWeek">
+        <td><button (click)="setValueForModel(lesson, dayEn); titleForPopup = 'Редактировать'; editLesson = true;"
+                    class="icon" mat-stroked-button>✎</button></td>
         <td>{{day}}</td>
         <td>{{lesson.subject}}</td>
         <td>{{lesson.time | time}}</td>
         <td>{{lesson.typeLesson}}</td>
         <td>{{lesson.teacher}}</td>
         <td>{{lesson.lectureHall}}</td>
-        <td class="last-td"><button (click)="remove(lesson.id)" class="icon" mat-stroked-button>✖</button></td>
+        <td class="last-td"><button
+                (click)="deleteLesson = true; idOfCurrentLesson = lesson.id" class="icon" mat-stroked-button>✖
+        </button></td>
     </tr>
 </ng-template>
 
 <button class="button-add-group"
         *ngIf="showTable"
-        (click)="addLesson = true"
+        (click)="addLesson = true; titleForPopup = 'Добавить'"
         mat-flat-button color="primary">Добавить занятие</button>
-<div *ngIf="addLesson" class="popup">
+
+<div *ngIf="showTable">
+    <table class="table-admin">
+        <thead>
+            <tr>
+                <th></th>
+                <th>День недели</th>
+                <th>Предмет</th>
+                <th>Время</th>
+                <th>Вид занятия</th>
+                <th>Преподаватель</th>
+                <th>Аудитория</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngFor="let item of currentGroup | async">
+                <template [ngTemplateOutlet]="lessonTemplate"
+                          [ngTemplateOutletContext]="{
+                            day: 'понедельник',
+                            dayEn: 'monday',
+                            week: item.monday
+                          }">
+                </template>
+                <template [ngTemplateOutlet]="lessonTemplate"
+                          [ngTemplateOutletContext]="{
+                            day: 'вторник',
+                            dayEn: 'tuesday',
+                            week: item.tuesday
+                          }">
+                </template>
+                <template [ngTemplateOutlet]="lessonTemplate"
+                          [ngTemplateOutletContext]="{
+                            day: 'среда',
+                            dayEn: 'wednesday',
+                            week: item.wednesday
+                          }">
+                </template>
+                <template [ngTemplateOutlet]="lessonTemplate"
+                          [ngTemplateOutletContext]="{
+                            day: 'четверг',
+                            dayEn: 'thursday',
+                            week: item.thursday
+                          }">
+                </template>
+                <template [ngTemplateOutlet]="lessonTemplate"
+                          [ngTemplateOutletContext]="{
+                            day: 'пятница',
+                            dayEn: 'friday',
+                            week: item.friday
+                          }">
+                </template>
+                <template [ngTemplateOutlet]="lessonTemplate"
+                          [ngTemplateOutletContext]="{
+                            day: 'суббота',
+                            dayEn: 'saturday',
+                            week: item.saturday
+                          }">
+                </template>
+            </ng-container>
+        </tbody>
+    </table>
+</div>
+
+<div *ngIf="addLesson || editLesson" class="popup">
     <fieldset class="popup__fieldset">
-        <legend class="popup__legend">Заполните поля</legend>
+        <legend class="popup__legend">{{titleForPopup}}</legend>
         <span (click)="close()" class="popup__close">закрыть ×</span>
         <form class="popup__form" [formGroup]="model" novalidate (submit)="onSubmit()">
             <h3 class="popup__title">Название предмета</h3>
@@ -122,63 +194,19 @@
             </mat-form-field>
             <p class="popup__error">{{errorText}}</p>
             <p class="popup__feedback">{{feedback}}</p>
-            <button type="submit" class="popup__btn-add" mat-raised-button color="primary">Добавить</button>
+            <button type="submit" class="popup__btn-add" mat-raised-button color="primary">{{titleForPopup}}</button>
         </form>
     </fieldset>
 </div>
 
-<div *ngIf="showTable">
-    <table class="table-admin">
-        <thead>
-            <tr>
-                <th>День недели</th>
-                <th>Предмет</th>
-                <th>Время</th>
-                <th>Вид занятия</th>
-                <th>Преподаватель</th>
-                <th>Аудитория</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <ng-container #testInfo *ngFor="let item of currentGroup | async">
-                <template [ngTemplateOutlet]="lessonTemplate"
-                          [ngTemplateOutletContext]="{
-                            day: 'понедельник',
-                            week: item.monday
-                          }">
-                </template>
-                <template [ngTemplateOutlet]="lessonTemplate"
-                          [ngTemplateOutletContext]="{
-                            day: 'вторник',
-                            week: item.tuesday
-                          }">
-                </template>
-                <template [ngTemplateOutlet]="lessonTemplate"
-                          [ngTemplateOutletContext]="{
-                            day: 'среда',
-                            week: item.wednesday
-                          }">
-                </template>
-                <template [ngTemplateOutlet]="lessonTemplate"
-                          [ngTemplateOutletContext]="{
-                            day: 'четверг',
-                            week: item.thursday
-                          }">
-                </template>
-                <template [ngTemplateOutlet]="lessonTemplate"
-                          [ngTemplateOutletContext]="{
-                            day: 'пятница',
-                            week: item.friday
-                          }">
-                </template>
-                <template [ngTemplateOutlet]="lessonTemplate"
-                          [ngTemplateOutletContext]="{
-                            day: 'суббота',
-                            week: item.saturday
-                          }">
-                </template>
-            </ng-container>
-        </tbody>
-    </table>
+<div *ngIf="deleteGroup || deleteLesson" class="popup-delete">
+        <div class="popup-delete__form">
+            <h2 *ngIf="deleteGroup" class="popup-delete__title">Вы точно хотите удалить группу?</h2>
+            <h2 *ngIf="deleteLesson" class="popup-delete__title">Вы точно хотите удалить занятие?</h2>
+            <div class="popup-delete__buttons">
+                <button *ngIf="deleteGroup" (click)="removeGroup()" mat-raised-button color="warn">Да</button>
+                <button *ngIf="deleteLesson" (click)="removeLesson()" mat-raised-button color="warn">Да</button>
+                <button (click)="deleteGroup = false; deleteLesson = false" mat-raised-button color="basic">Нет</button>
+            </div>
+        </div>
 </div>
