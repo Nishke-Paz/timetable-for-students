@@ -25,4 +25,14 @@ export class SttServerService{
     addTimetable(data: SttLesson, id: number, date: string): Observable<unknown>{
         return this.httpClient.put(`/timetable/${id}/${date}/addTimetable`, data);
     }
+    editLesson(
+        idLesson: number,
+        idGroup: number,
+        dayOfTheWeek: string,
+        lesson: SttLesson): Observable<unknown>{
+        return this.httpClient.put(`/timetable/${idLesson}/${idGroup}/${dayOfTheWeek}/editTimetable`, lesson);
+    }
+    deleteGroup(id: number): void{
+        this.httpClient.delete(`/timetable/${id}/delete`).subscribe();
+    }
 }

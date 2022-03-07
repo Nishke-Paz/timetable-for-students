@@ -30,5 +30,13 @@
   "/timetable/:id/:dayOfWeek/addTimetable":{
     "target": "http://localhost:3000/",
     "secure": false
+  },
+  "/timetable/:idLesson/:idGroup/:dayOfTheWeek/editTimetable":{
+    "target": "http://localhost:3000/",
+    "secure": false
+  },
+  "/timetable/:id/delete":{
+    "target": "http://localhost:3000/",
+    "secure": false
   }
 }
